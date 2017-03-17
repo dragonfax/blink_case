@@ -29,7 +29,7 @@ union() {
 
   // leads room
   lead_clear_thick = lead_clearance + pcb_thick;
-  translate([0,0, led_clear_thick / 2 - pcb_thick])
+  translate([0,0, lead_clear_thick / 2 - pcb_thick])
     cube([
         comp_clear_width,
         comp_clear_length,
@@ -43,6 +43,10 @@ union() {
   color("red") LED([1,5,pcb_thick]);
   color("blue") LED([1,8,pcb_thick]);
   color("green") LED([1,11,pcb_thick]);
+
+  Button([3,4,pcb_thick]);
+  Button([3,7,pcb_thick]);
+  Button([3,10,pcb_thick]);
 }
 
 module LED(position) {
@@ -53,4 +57,12 @@ module LED(position) {
       cylinder(r=led_width/2, h=led_height);
       translate([0,0,led_height]) sphere(r=led_width/2);
     }
+}
+
+module Button(position) {
+  button_width = 2;
+  button_height = 3;
+  color("black")
+    translate(position)
+      cube([button_width, button_width, button_height]);
 }
