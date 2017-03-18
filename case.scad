@@ -58,7 +58,7 @@ union() {
   button_position = pcb_width / 2 - button_width - button_offset;
   Button(button_width, [button_position,led_positions[0],pcb_thick]);
   Button(button_width, [button_position,led_positions[1],pcb_thick]);
-  Button(button_width, [button_position,led_posttions[2],pcb_thick]);
+  Button(button_width, [button_position,led_positions[2],pcb_thick]);
 }
 
 module LED(led_width,position) {
