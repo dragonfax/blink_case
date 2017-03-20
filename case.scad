@@ -16,8 +16,10 @@ pcb_thick = pcb_size[2];
 
 battery_pos = [pcb_width/2 - battery_size[0] - battery_bottom_offset,-1 * pcb_length/2 + battery_left_offset];
 
+union() {
+  translate([battery_pos[0],battery_pos[1],pcb_thick]) cube([battery_size[0] + 1, battery_size[1] + 1, battery_size[2] + 1]);
 difference() {
-  %cube([pcb_width + 2, pcb_length + 2, 10],center=true);
+  cube([pcb_width + 2, pcb_length + 2, 10],center=true);
 union() {
 
   // pcb
@@ -64,6 +66,7 @@ union() {
   Button(button_width, [button_position,pcb_length/2 - led_positions[2] - button_width/2,pcb_thick]);
 }
 }
+}
 
 module LED(led_width,position) {
   led_height = 9; // total highe of cylinder and cap hemisphere
@@ -80,7 +83,7 @@ module LED(led_width,position) {
 }
 
 module Button(button_width, position) {
-  button_height = 4;
+  button_height = 5;
   color("black")
     translate(position)
       cube([button_width, button_width, button_height]);
