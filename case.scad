@@ -1,99 +1,71 @@
 
 // exact measurements
 
-pcb_width = 32.57;
-pcb_length = 55.64;
-pcb_thick = 1.52;
+pcb_size_x = 32.57;
+pcb_size_y = 55.64;
+pcb_size_z = 1.52;
 
-pcb_x_edge = pcb_width / 2;
-pcb_y_edge = pcb_length / 2;
 
+components_size_z_above = 4; // for resisters
+components_size_z_below = 3 - pcb_size_z; // for soldering points
+components_clearance = 1; // lip on edge
+
+components_size_x = pcb_size_x - 2 * components_clearance;
+components_size_y = pcb_size_y - 2 * components_clearance;
+components_size_z = components_size_z_above + components_size_z_below + pcb_size_z;
+
+battery_size = [19.92,21.18,5.62 - pcb_size_z];
+battery_offset_y = 2.16;
+battery_offset_x = 0.77;
+battery_pos = [pcb_size_x - battery_offset_x - battery_size[0],battery_offset_y, pcb_size_z];
+
+
+button_size_z = 5.10 - pcb_size_z;
+button_size_x = 6;
+button_size_y = 6;
+button_offset_x = 8.26; // from bottom of pcb to top edge of button
+button_offsets_y = [8.21, 18.19, 28.23];
+button_pad_z = 5; // ensure we have a hole for the button.
+ 
+led_offset_x = 17.78; // edge of led
+led_offsets_y = [7.54, 17.50, 27.84]; // edge of leds (not center)
+led_size_z = 9; // total highe of cylinder and cap hemisphere
 led_diameter = 5.88; // diameter of the lip on the bottom of the led.
 led_radius = led_diameter / 2;
 
-button_width = 6;
-
-component_clearance = 4; // for resisters
-lead_clearance = 3;
-
-battery_size = [19.92,21.18,5.62 - pcb_thick];
-battery_left_offset = 2.16;
-battery_bottom_offset = 0.77;
-
-clearance_padding = 1; // lip on the edge of the pcb
-
-// button_height = 5.11 - pcb_thick;
-button_height = 10;
-button_x = pcb_x_edge - 8.26;
- 
-led_positions = [pcb_y_edge - 7.54, pcb_y_edge - 17.50, pcb_y_edge - 27.84];
-
-led_height = 9; // total highe of cylinder and cap hemisphere
 
 
-battery_pos = [pcb_width/2 - battery_size[0] - battery_bottom_offset,-1 * pcb_length/2 + battery_left_offset];
+!pcb();
 
-intersection() {
-  split();
-  difference() {
-    case();
-    pcb();
-  }
-}
-
-module split() {
-  translate([-50,-50,pcb_thick]) cube([100,100,100]);
-}
-
-module case() {
-  union() {
-    translate([battery_pos[0],battery_pos[1],pcb_thick]) cube([battery_size[0] + 1, battery_size[1] + 1, battery_size[2] + 1]);
-    translate([0,0,component_clearance - lead_clearance]) cube([pcb_width + 2, pcb_length + 2, pcb_thick + lead_clearance + component_clearance + 2],center=true);
-  }
-}
 
 module pcb() {
   union() {
 
     // pcb
-    color("green") translate([0,0,pcb_thick / 2]) cube([pcb_width, pcb_length, pcb_thick],center=true);
+    color("green") cube([pcb_size_x, pcb_size_y, pcb_size_z]);
 
     // component room
-    comp_clear_width = pcb_width - clearance_padding * 2;
-    comp_clear_length = pcb_length - clearance_padding * 2;
-    comp_clear_thick = component_clearance;
-    translate([0,0,comp_clear_thick / 2]) 
+    %translate([components_clearance, components_clearance, -1 * components_size_z_below ])
       cube([
-        comp_clear_width,
-        comp_clear_length,
-        comp_clear_thick
-      ],center=true);
-
-    // leads room
-    lead_clear_thick = lead_clearance + pcb_thick;
-    translate([0,0, lead_clear_thick / 2 - pcb_thick])
-      cube([
-          comp_clear_width,
-          comp_clear_length,
-          lead_clear_thick
-      ], center=true);
-    translate([10, -pcb_length / 2, -pcb_thick]) cube([4,lead_clearance,pcb_thick]);
+        components_size_x,
+        components_size_y,
+        components_size_z
+      ]);
 
     // battery pack
-    color("lightblue") translate([battery_pos[0],battery_pos[1],pcb_thick]) cube(battery_size);
+    color("lightblue") translate(battery_pos) cube(battery_size);
 
     // leds
-    led_offset = pcb_x_edge - 12;
-    color("red")   LED([led_offset,pcb_y_edge - led_positions[0] - led_diameter,pcb_thick]);
-    color("blue")  LED([led_offset,pcb_y_edge - led_positions[1] - led_diameter,pcb_thick]);
-    color("green") LED([led_offset,pcb_y_edge - led_positions[2] - led_diameter,pcb_thick]);
+    led_pos_x = pcb_size_x - led_offset_x + led_radius; // center of led
+    color("red")   LED([led_pos_x,pcb_size_y - led_offsets_y[0] + led_radius,pcb_size_z]);
+    color("blue")  LED([led_pos_x,pcb_size_y - led_offsets_y[1] + led_radius,pcb_size_z]);
+    color("green") LED([led_pos_x,pcb_size_y - led_offsets_y[2] + led_radius,pcb_size_z]);
 
-    button_width = 6;
-    button_offset = 2;
-    button_position = pcb_width / 2 - button_width - button_offset;
-    Button(button_width, [button_position,pcb_y_edge - led_positions[0] - button_width,pcb_thick]);
-    Button(button_width, [button_position,pcb_y_edge - led_positions[1] - button_width,pcb_thick]);
-    Button(button_width, [button_position,pcb_y_edge - led_positions[2] - button_width,pcb_thick]);
+
+    button_pos_x = pcb_size_x - button_offset_x;
+    Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
+    Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
+    Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
   }
 }
 
@@ -101,7 +73,7 @@ module LED(position) {
 
   $fn = 20;
 
-  cylinder_height = led_height - led_radius;
+  cylinder_height = led_size_z - led_radius;
   translate(position)
     union() {
       cylinder(r=led_radius, h=cylinder_height);
@@ -109,8 +81,10 @@ module LED(position) {
     }
 }
 
-module Button(button_width, position) {
+module Button(position) {
   color("black")
     translate(position)
-      cube([button_width, button_width, button_height]);
+      cube([button_size_x, button_size_y, button_size_z]);
+  translate([position[0], position[1], position[2] + button_size_z])
+    cube([button_size_x, button_size_y, button_pad_z]);
 }
