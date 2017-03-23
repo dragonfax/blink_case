@@ -44,13 +44,7 @@ module pcb() {
     // pcb
     color("green") cube([pcb_size_x, pcb_size_y, pcb_size_z]);
 
-    // component room
-    %translate([components_clearance, components_clearance, -1 * components_size_z_below ])
-      cube([
-        components_size_x,
-        components_size_y,
-        components_size_z
-      ]);
+    Components();
 
     // battery pack
     color("lightblue") translate(battery_pos) cube(battery_size);
@@ -66,6 +60,29 @@ module pcb() {
     Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
     Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
     Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
+  }
+}
+
+module Components() {
+
+  // buffer to make room for components, and soldered leads.
+  %union() {
+    translate([components_clearance, components_clearance, -1 * components_size_z_below ])
+      cube([
+        components_size_x,
+        components_size_y,
+        components_size_z
+      ]);
+
+    clear1_size_y = 24;
+    clear1_offset_y = 2.5;
+    translate([0, pcb_size_y - clear1_offset_y - clear1_size_y, - components_size_z_below])
+      cube([components_clearance, clear1_size_y, components_size_z_below]);
+
+    clear2_size_x = 6.9;
+    clear2_offset_x = 1.85;
+    translate([pcb_size_x - clear2_offset_x - clear2_size_x, pcb_size_y - components_clearance, - components_size_z_below])
+      cube([clear2_size_x, components_clearance, components_size_z_below]);
   }
 }
 
