@@ -22,7 +22,8 @@ battery_bottom_offset = 0.77;
 
 clearance_padding = 1; // lip on the edge of the pcb
 
-button_height = 5.11 - pcb_thick;
+// button_height = 5.11 - pcb_thick;
+button_height = 10;
 button_x = pcb_x_edge - 8.26;
  
 led_positions = [pcb_y_edge - 7.54, pcb_y_edge - 17.50, pcb_y_edge - 27.84];
@@ -82,18 +83,17 @@ module pcb() {
     color("lightblue") translate([battery_pos[0],battery_pos[1],pcb_thick]) cube(battery_size);
 
     // leds
-    led_offset = pcb_width/2 - 12 - led_diameter;
-    led_offset_2 = pcb_length / 2 ;
-    color("red") LED([led_offset,led_offset_2 - led_positions[0],pcb_thick]);
-    color("blue") LED([led_offset,led_offset_2 - led_positions[1],pcb_thick]);
-    color("green") LED([led_offset,led_offset_2 - led_positions[2],pcb_thick]);
+    led_offset = pcb_x_edge - 12;
+    color("red")   LED([led_offset,pcb_y_edge - led_positions[0] - led_diameter,pcb_thick]);
+    color("blue")  LED([led_offset,pcb_y_edge - led_positions[1] - led_diameter,pcb_thick]);
+    color("green") LED([led_offset,pcb_y_edge - led_positions[2] - led_diameter,pcb_thick]);
 
     button_width = 6;
     button_offset = 2;
     button_position = pcb_width / 2 - button_width - button_offset;
-    Button(button_width, [button_position,pcb_length/2 - led_positions[0] - button_width/2,pcb_thick]);
-    Button(button_width, [button_position,pcb_length/2 - led_positions[1] - button_width/2,pcb_thick]);
-    Button(button_width, [button_position,pcb_length/2 - led_positions[2] - button_width/2,pcb_thick]);
+    Button(button_width, [button_position,pcb_y_edge - led_positions[0] - button_width,pcb_thick]);
+    Button(button_width, [button_position,pcb_y_edge - led_positions[1] - button_width,pcb_thick]);
+    Button(button_width, [button_position,pcb_y_edge - led_positions[2] - button_width,pcb_thick]);
   }
 }
 
