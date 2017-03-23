@@ -34,19 +34,27 @@ led_diameter = 5.88; // diameter of the lip on the bottom of the led.
 led_radius = led_diameter / 2;
 
 
-pcb();
+%difference() {
+  case();
+  pcb();
+}
 
-case_thick = 1;
+module case() {
 
-
-%minkowski() {
-  $fn = 50;
-  translate([-case_thick, -case_thick, -1 * ( case_thick + components_size_z_below ) ])
-    cube([
-      pcb_size_x + case_thick * 2, 
-      pcb_size_y + case_thick * 2, 
-      pcb_size_z + components_size_z_below + components_size_z_above + case_thick * 2]);
-  sphere(r=1);
+  case_thick = 1;
+  minkowski() {
+    $fn = 50;
+    difference() {
+      translate([-case_thick, -case_thick, -1 * ( case_thick + components_size_z_below ) ])
+        cube([
+          pcb_size_x + case_thick * 2, 
+          pcb_size_y + case_thick * 2, 
+          pcb_size_z + components_size_z_below + components_size_z_above + case_thick * 2]);
+      translate([13.00,25.00,5.0])
+        cube([19.00,31.00,3]);
+    }
+    sphere(r=1);
+  }
 }
 
 
