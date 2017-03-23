@@ -34,8 +34,20 @@ led_diameter = 5.88; // diameter of the lip on the bottom of the led.
 led_radius = led_diameter / 2;
 
 
+pcb();
 
-!pcb();
+case_thick = 1;
+
+
+%minkowski() {
+  $fn = 50;
+  translate([-case_thick, -case_thick, -1 * ( case_thick + components_size_z_below ) ])
+    cube([
+      pcb_size_x + case_thick * 2, 
+      pcb_size_y + case_thick * 2, 
+      pcb_size_z + components_size_z_below + components_size_z_above + case_thick * 2]);
+  sphere(r=1);
+}
 
 
 module pcb() {
@@ -66,7 +78,7 @@ module pcb() {
 module Components() {
 
   // buffer to make room for components, and soldered leads.
-  %union() {
+  union() {
     translate([components_clearance, components_clearance, -1 * components_size_z_below ])
       cube([
         components_size_x,
