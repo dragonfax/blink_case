@@ -36,10 +36,37 @@ led_diameter = 5.88; // diameter of the lip on the bottom of the led.
 led_radius = led_diameter / 2;
 
 
-difference() {
-  case();
-  pcb();
-  translate([pcb_size_x * 11 / 16, pcb_size_y * 7/16, pcb_size_z + button_size_z]) cube([ pcb_size_x/2, pcb_size_y, 10]);
+translate([30, 80, 5]) rotate([0,180,0]) top_case();
+bottom_case();
+
+module bottom_case() {
+  difference() {
+    full_case();
+    case_break();
+
+    // add a thicker pcb to ensure we don't have a zero width wall.
+    scale([1,1,2]) cube([pcb_size_x, pcb_size_y, pcb_size_z]);
+  }
+}
+
+module top_case() {
+  intersection() {
+    full_case();
+    case_break();
+  }
+}
+
+module case_break() {
+  translate([ -10, -10, pcb_size_z]) cube([100, 100, 100]);
+}
+
+module full_case() {
+
+  difference() {
+    case();
+    pcb();
+    translate([pcb_size_x * 11 / 16, pcb_size_y * 7/16, pcb_size_z + button_size_z]) cube([ pcb_size_x/2, pcb_size_y, 10]);
+  }
 }
 
 module case() {
@@ -61,12 +88,12 @@ module pcb() {
   union() {
 
     // pcb
-    color("green") cube([pcb_size_x, pcb_size_y, pcb_size_z]);
+    cube([pcb_size_x, pcb_size_y, pcb_size_z]);
 
     Components();
 
     // battery pack
-    color("lightblue") translate(battery_pos) cube(battery_size);
+    translate(battery_pos) cube(battery_size);
 
     // leds
     led_pos_x = pcb_size_x - led_offset_x + led_radius; // center of led
@@ -96,12 +123,12 @@ module Components() {
     clear1_size_y = 24;
     clear1_offset_y = 2.5;
     translate([0, pcb_size_y - clear1_offset_y - clear1_size_y, - components_size_z_below])
-      cube([components_clearance, clear1_size_y, components_size_z_below]);
+      cube([components_clearance * 1.1, clear1_size_y, components_size_z_below * 1.1]);
 
     clear2_size_x = 6.9;
     clear2_offset_x = 1.85;
-    translate([pcb_size_x - clear2_offset_x - clear2_size_x, pcb_size_y - components_clearance, - components_size_z_below])
-      cube([clear2_size_x, components_clearance, components_size_z_below]);
+    translate([pcb_size_x - clear2_offset_x - clear2_size_x, pcb_size_y - components_clearance - 1, - components_size_z_below])
+      cube([clear2_size_x, components_clearance + 1, components_size_z_below * 1.1]);
   }
 }
 
