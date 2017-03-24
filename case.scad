@@ -150,7 +150,7 @@ module LED(position) {
   cylinder_height = led_size_z - led_radius;
   translate(position)
     union() {
-      cylinder(r=led_radius, h=cylinder_height);
+      cylinder_outer(cylinder_height , led_radius, 20);
       translate([0,0,cylinder_height]) sphere(r=led_radius);
     }
 }
@@ -161,4 +161,9 @@ module Button(position) {
       cube([button_size_x, button_size_y, button_size_z]);
   //translate([position[0], position[1], position[2] + button_size_z])
    // cube([button_size_x, button_size_y, button_pad_z]);
+}
+
+module cylinder_outer(height,radius,fn){
+   fudge = 1/cos(180/fn);
+   cylinder(h=height,r=radius*fudge,$fn=fn);
 }
