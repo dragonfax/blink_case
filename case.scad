@@ -42,7 +42,7 @@ bottom_case();
 module bottom_case() {
   difference() {
     full_case();
-    case_break();
+    case_break(0.1);
 
     // add a thicker pcb to ensure we don't have a zero width wall.
     scale([1,1,2]) cube([pcb_size_x, pcb_size_y, pcb_size_z]);
@@ -52,18 +52,22 @@ module bottom_case() {
 module top_case() {
   intersection() {
     full_case();
-    case_break();
+    case_break(0.3);
   }
 }
 
-module case_break() {
+module case_break(tolerance=0) {
   translate([ -10, -10, pcb_size_z]) 
     union( ){
+
+      // clasp edges that stick up
       difference() {
         cube([50, 70, 20]);
-        translate([-1, 20, -1]) cube([52,32,2]);
+        translate([-1, 20, -1]) cube([52,32,3]);
       }
-      translate([9,10,0]) cube([pcb_size_x + 2, pcb_size_y + 2, 10]);
+
+      // dig out the lip of the clasp edges
+      translate([9 - tolerance/2,10,0]) cube([pcb_size_x + 2 + tolerance, pcb_size_y + 2, 10]);
     }
 }
 
