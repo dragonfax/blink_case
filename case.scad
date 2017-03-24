@@ -6,19 +6,21 @@ pcb_size_y = 55.64;
 pcb_size_z = 1.52;
 
 
-components_size_z_above = 4; // for resisters
+resistors_size_z = 4; // for resisters
 components_size_z_below = 3 - pcb_size_z; // for soldering points
 components_clearance = 1; // lip on edge
-
-components_size_x = pcb_size_x - 2 * components_clearance;
-components_size_y = pcb_size_y - 2 * components_clearance;
-components_size_z = components_size_z_above + components_size_z_below + pcb_size_z;
 
 battery_size = [19.92,21.18,5.62 - pcb_size_z];
 battery_offset_y = 2.16;
 battery_offset_x = 0.77;
 battery_pos = [pcb_size_x - battery_offset_x - battery_size[0],battery_offset_y, pcb_size_z];
 
+components_size_z_above = max(resistors_size_z, battery_size[2]);
+
+
+components_size_x = pcb_size_x - 2 * components_clearance;
+components_size_y = pcb_size_y - 2 * components_clearance;
+components_size_z = components_size_z_above + components_size_z_below + pcb_size_z;
 
 button_size_z = 5.10 - pcb_size_z;
 button_size_x = 6;
@@ -34,9 +36,10 @@ led_diameter = 5.88; // diameter of the lip on the bottom of the led.
 led_radius = led_diameter / 2;
 
 
-%difference() {
+difference() {
   case();
   pcb();
+  translate([pcb_size_x * 11 / 16, pcb_size_y * 7/16, pcb_size_z + button_size_z]) cube([ pcb_size_x/2, pcb_size_y, 10]);
 }
 
 module case() {
@@ -44,15 +47,11 @@ module case() {
   case_thick = 1;
   minkowski() {
     $fn = 50;
-    difference() {
-      translate([-case_thick, -case_thick, -1 * ( case_thick + components_size_z_below ) ])
-        cube([
-          pcb_size_x + case_thick * 2, 
-          pcb_size_y + case_thick * 2, 
-          pcb_size_z + components_size_z_below + components_size_z_above + case_thick * 2]);
-      translate([13.00,25.00,5.0])
-        cube([19.00,31.00,3]);
-    }
+    translate([-case_thick, -case_thick, -1 * ( case_thick + components_size_z_below ) ])
+      cube([
+        pcb_size_x + case_thick * 2, 
+        pcb_size_y + case_thick * 2, 
+        pcb_size_z + components_size_z_below + components_size_z_above + case_thick * 2]);
     sphere(r=1);
   }
 }
@@ -77,9 +76,9 @@ module pcb() {
 
 
     button_pos_x = pcb_size_x - button_offset_x;
-    Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
-    Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
-    Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
+    #Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
+    #Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
+    #Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
   }
 }
 
@@ -87,12 +86,12 @@ module Components() {
 
   // buffer to make room for components, and soldered leads.
   union() {
-    translate([components_clearance, components_clearance, -1 * components_size_z_below ])
-      cube([
-        components_size_x,
-        components_size_y,
-        components_size_z
-      ]);
+      translate([components_clearance, components_clearance, -1 * components_size_z_below ])
+        cube([
+          components_size_x,
+          components_size_y,
+          components_size_z
+        ]);
 
     clear1_size_y = 24;
     clear1_offset_y = 2.5;
@@ -122,6 +121,6 @@ module Button(position) {
   color("black")
     translate(position)
       cube([button_size_x, button_size_y, button_size_z]);
-  translate([position[0], position[1], position[2] + button_size_z])
-    cube([button_size_x, button_size_y, button_pad_z]);
+  //translate([position[0], position[1], position[2] + button_size_z])
+   // cube([button_size_x, button_size_y, button_pad_z]);
 }
