@@ -57,7 +57,14 @@ module top_case() {
 }
 
 module case_break() {
-  translate([ -10, -10, pcb_size_z]) cube([100, 100, 100]);
+  translate([ -10, -10, pcb_size_z]) 
+    union( ){
+      difference() {
+        cube([50, 70, 20]);
+        translate([-1, 20, -1]) cube([52,32,2]);
+      }
+      translate([9,10,0]) cube([pcb_size_x + 2, pcb_size_y + 2, 10]);
+    }
 }
 
 module full_case() {
@@ -103,9 +110,9 @@ module pcb() {
 
 
     button_pos_x = pcb_size_x - button_offset_x;
-    #Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
-    #Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
-    #Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
+    Button([button_pos_x,pcb_size_y - button_offsets_y[0] ,pcb_size_z]);
+    Button([button_pos_x,pcb_size_y - button_offsets_y[1] ,pcb_size_z]);
+    Button([button_pos_x,pcb_size_y - button_offsets_y[2] ,pcb_size_z]);
   }
 }
 
